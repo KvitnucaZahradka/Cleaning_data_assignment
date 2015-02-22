@@ -1,4 +1,6 @@
 analysis<-function(){
+        
+#Start-of-Part1---------------------------------------------
 library(plyr)
 library(tidyr)
 lenka<-read.table("./UCI_HAR_Dataset/train/X_train.txt")
@@ -30,10 +32,15 @@ rm("lenka")
 subject_train=mutate(subject_train,origin="train")
 subject_test=mutate(subject_test,origin="test")
 subject_join<-rbind(subject_train,subject_test)
+
 #features vector
 lenka<-read.table("./UCI_HAR_Dataset/features.txt")
 features<-tbl_df(lenka)
 rm("lenka")
+
+#End-of-Part1------------------------------------------------------------
+
+#Start-of-Part2------------------------------------------------------------
 
 # rename as untidy names from features for X_join
 choose<-select(features,V2)
@@ -72,6 +79,10 @@ sX_join<-dplyr::rename(sX_join,subject=V1)
 
 name_without<-select(sX_join,-cbind(subject,activity,origin))
 
+#End-of-Part2------------------------------------------------------------
+
+#Start-of-Part3------------------------------------------------------------
+
 # melt data to prepare it into the shape that is good for mean calculation (m as melted in sX_joint)
 
 msX_join<-melt(sX_join,id=c("origin","subject","activity"),measure.vars=c(names(name_without)))
@@ -100,4 +111,7 @@ na.test(almost)
 final<-almost
 
 write.table(final,file="Clean_data_averages.txt",row.name=FALSE)
+
+#End-of-Part3------------------------------------------------------------
+
 }
