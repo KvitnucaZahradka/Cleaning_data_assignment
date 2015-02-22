@@ -1,4 +1,6 @@
+analysis<-function(){
 library(plyr)
+library(tidyr)
 lenka<-read.table("./UCI_HAR_Dataset/train/X_train.txt")
 X_train<-tbl_df(lenka)
 rm("lenka")
@@ -59,12 +61,12 @@ rm("temp3")
 temp<-select(y_join,V1)
 sX_join<-cbind(temp,sX_join)
 rm("temp")
-sX_join<-rename(sX_join,activity=V1)
+sX_join<-dplyr::rename(sX_join,activity=V1)
 
 temp<-select(subject_join,V1)
 sX_join<-cbind(temp,sX_join)
 rm("temp")
-sX_join<-rename(sX_join,subject=V1)
+sX_join<-dplyr::rename(sX_join,subject=V1)
 
 # create name vector without subject activity and origin
 
@@ -72,10 +74,10 @@ name_without<-select(sX_join,-cbind(subject,activity,origin))
 
 # melt data to prepare it into the shape that is good for mean calculation (m as melted in sX_joint)
 
-msX_joint<-melt(sX_join,id=c("origin","subject","activity"),measure.vars=c(names(name_without)))
+msX_join<-melt(sX_join,id=c("origin","subject","activity"),measure.vars=c(names(name_without)))
 
 # almost variable produces the table we want up to the naming of rows in the "activity" column
-almost<-dcast(msX_joint,origin+subject+activity~variable,mean)
+almost<-dcast(msX_join,origin+subject+activity~variable,mean)
 
 # rename "activity" column in the almost
 
@@ -96,3 +98,6 @@ na.test(almost)
 # almost is final
 
 final<-almost
+
+write.table(final,file="Clean_data_averages.txt",row.name=FALSE)
+}
